@@ -3,7 +3,7 @@ import { mapping, light as lightTheme } from '@eva-design/eva';
 import { ApplicationProvider, Layout, Input, Text, Button } from 'react-native-ui-kitten';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 
-const ApplicationContent = (props) => {
+const LoginScreen = (props) => {
     const [isError, setIsError] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -45,11 +45,5 @@ const ApplicationContent = (props) => {
         </Layout>
     ); 
 }
-  
-const LoginScreen = (props) => (
-    <ApplicationProvider mapping={mapping} theme={lightTheme}>
-        <ApplicationContent navigation={props.navigation}/>
-    </ApplicationProvider>
-);
 
 export default LoginScreen;

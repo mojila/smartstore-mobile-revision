@@ -6,10 +6,16 @@ import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import ListScreen from './list';
+import ProfileScreen from './profile';
+import OrderScreen from './order';
+import PickupListScreen from './pickupList';
 
 const HomeNavigator = createStackNavigator(
   {
-    List: ListScreen
+    List: ListScreen,
+    PickupList: PickupListScreen,
+    Order: OrderScreen,
+    Profile: ProfileScreen,
   }, {
     initialRouteName: 'List',
     transitionConfig: () => ({ screenInterpolator: () => null }),

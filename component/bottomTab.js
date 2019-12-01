@@ -9,10 +9,13 @@ const BottomTab = (props) => {
                 props.navigation.navigate('List');
                 break;
             case 1:
+                props.navigation.navigate('PickupList');
                 break;
             case 2:
+                props.navigation.navigate('Order');
                 break;
             case 3:
+                props.navigation.navigate('Profile');
                 break;
             default:
                 break;
@@ -21,7 +24,7 @@ const BottomTab = (props) => {
 
     return (
     <BottomNavigation style={{ position: 'absolute', zIndex: 99, bottom: 0, elevation: 1 }}
-        selectedIndex={selectedIndex}
+        selectedIndex={props.indexTab || selectedIndex}
         onSelect={(e) => {
             setSelectedIndex(e);
             tabNavigate(e);

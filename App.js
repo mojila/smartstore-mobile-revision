@@ -12,7 +12,7 @@ const AppNavigator = createStackNavigator(
     Home: HomeScreen
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'Login',
     transitionConfig: () => ({ screenInterpolator: () => null }),
     headerMode: 'none',
   }

@@ -1,36 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { mapping, light as lightTheme } from '@eva-design/eva';
 import { ApplicationProvider, Layout, Input, Text, Button } from 'react-native-ui-kitten';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
+import { AsyncStorage } from 'react-native';
+import axios from 'axios';
 
 const LoginScreen = (props) => {
     const [isError, setIsError] = useState(false);
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const login = () => {
-        if (email === 'admin@smartstore.com' && password === '123456') {
-            let user = {
-                name: 'Admin',
-                role: 'stockeeper',
-            };
+    const checkLogin = async () => {
+        try {
+            let value = await AsyncStorage.getItem('@auth_token')
 
-            AsyncStorage.setItem('user', JSON.stringify(user));
-            return props.navigation.navigate('Login');
+            if (value !== null) {
+                props.navigation.navigate('Home');
+            }
+        } catch (_e) {
         }
-
-        return setIsError(true);
     };
+
+    const login = async () => {
+        try {
+            let value = await axios.post(`http://smartstore.machinevision.global/api/login`, {
+                'username': username,
+                'password': password
+            }).then(res => res.data);
+            
+            if (value !== null) {
+                await AsyncStorage.setItem('@auth_token', value.token);
+                await checkLogin();
+            }
+        } catch (_e) {
+            setIsError(true);
+        }
+    }
+
+    useEffect(() => {
+        checkLogin();
+    }, []);
 
     return (
         <Layout style={{ flex: 1, marginTop: getStatusBarHeight(), padding: 32 }}>
             <Text category="h2">Welcome!</Text>
             <Text>To Smartstore Mobile</Text>
             <Layout style={{ marginTop: 32 }}>
-                <Input placeholder = "Enter Your Email" 
-                    value={email}
-                    onChangeText={e => setEmail(e)}
-                    autoCompleteType = "email"/>
+                <Input placeholder = "Enter Your Username" 
+                    value={username}
+                    onChangeText={e => setUsername(e)}
+                    autoCompleteType = "username"/>
                 <Input placeholder = "Enter Your Password"
                     secureTextEntry
                     value={password}
@@ -38,7 +57,8 @@ const LoginScreen = (props) => {
                     {isError && <Text style={{ textAlign: 'center', marginTop: 8}}
                         status="danger">Email or Password is Incorrect.</Text>} 
                 <Button
-                    style={{ marginTop: 16 }}>
+                    style={{ marginTop: 16 }}
+                    onPress={() => login()}>
                     Log in
                 </Button> 
             </Layout> 

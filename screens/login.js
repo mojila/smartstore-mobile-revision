@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { mapping, light as lightTheme } from '@eva-design/eva';
-import { ApplicationProvider, Layout, Input, Text, Button } from 'react-native-ui-kitten';
+import { Layout, Input, Text, Button } from 'react-native-ui-kitten';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { AsyncStorage } from 'react-native';
 import axios from 'axios';

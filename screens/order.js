@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Input, Text, Spinner, Button } from 'react-native-ui-kitten';
-import { AsyncStorage } from 'react-native';
+import React from 'react';
+import { Layout, Text } from 'react-native-ui-kitten';
 import BottomTab from '../component/bottomTab';
 
 const OrderScreen = (props) => {

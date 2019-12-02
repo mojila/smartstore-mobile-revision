@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Input, Text, Spinner, Button } from 'react-native-ui-kitten';
+import React from 'react';
+import { Layout, Button } from 'react-native-ui-kitten';
 import { AsyncStorage } from 'react-native';
 import BottomTab from '../component/bottomTab';
 

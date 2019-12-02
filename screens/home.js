@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Layout } from 'react-native-ui-kitten';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { createAppContainer } from 'react-navigation';
@@ -24,16 +24,6 @@ const HomeNavigator = createStackNavigator(
 const HomeScreenContent = createAppContainer(HomeNavigator);
 
 const HomeScreen = (props) => {
-  // reset route stack
-  // const reset = StackActions.reset({
-  //   index: 0,
-  //   actions: [NavigationActions.navigate({ routeName: 'Home' })],
-  // });
-  
-  useEffect(() => {
-    // props.navigation.dispatch(reset);
-  }, []);
-
   return (
     <Layout style={{ flex: 1, marginTop: getStatusBarHeight() }}>
       <HomeScreenContent screenProps={{ rootNavigation: props.navigation }}/>

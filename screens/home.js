@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Layout,
-  BottomNavigation, 
-  BottomNavigationTab } from 'react-native-ui-kitten';
+import React, { useEffect } from 'react';
+import { Layout } from 'react-native-ui-kitten';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
-import { createAppContainer, StackActions, NavigationActions } from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import ListScreen from './list';
 import ProfileScreen from './profile';

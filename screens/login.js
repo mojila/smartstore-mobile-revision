@@ -4,6 +4,7 @@ import { ApplicationProvider, Layout, Input, Text, Button } from 'react-native-u
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { AsyncStorage } from 'react-native';
 import axios from 'axios';
+import { newBackend } from '../constant/apiUrl';
 
 const LoginScreen = (props) => {
     const [isError, setIsError] = useState(false);
@@ -23,7 +24,7 @@ const LoginScreen = (props) => {
 
     const login = async () => {
         try {
-            let value = await axios.post(`http://smartstore.machinevision.global/api/login`, {
+            let value = await axios.post(`${newBackend}/login`, {
                 'username': username,
                 'password': password
             }).then(res => res.data);

@@ -3,6 +3,7 @@ import { Layout, Input, Text, Spinner } from 'react-native-ui-kitten';
 import { ImageBackground, SafeAreaView, ScrollView } from 'react-native';
 import axios from 'axios';
 import BottomTab from '../component/bottomTab';
+import { oldBackend } from '../constant/apiUrl';
 
 const ListScreen = (props) => {
     const [materials, setMaterials] = useState([]);
@@ -10,7 +11,7 @@ const ListScreen = (props) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`http://139.180.133.201:8000/api/materials/?format=json`)
+        axios.get(`${oldBackend}/materials/?format=json`)
             .then(res => {
                 setMaterials(res.data);
             })
@@ -21,7 +22,7 @@ const ListScreen = (props) => {
     const search = (e) => {
         setLoading(true);
         setSearchKeyword(e);
-        axios.get(`http://139.180.133.201:8000/api/materials/?format=json&search=${e}`)
+        axios.get(`${oldBackend}/materials/?format=json&search=${e}`)
             .then(res => setMaterials(res.data))
             .then(() => setLoading(false))
             .catch(err => console.log(new Error(err)));

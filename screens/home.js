@@ -1,33 +1,45 @@
-import React from 'react';
-import { Layout } from 'react-native-ui-kitten';
-import { getStatusBarHeight } from 'react-native-status-bar-height';
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import React, { useEffect } from 'react';
+import { BottomNavigationTab, BottomNavigation } from 'react-native-ui-kitten';
+import { createAppContainer, SafeAreaView } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
 import ListScreen from './list';
 import ProfileScreen from './profile';
 import OrderScreen from './order';
 import PickupListScreen from './pickupList';
+import { StackActions, NavigationActions } from 'react-navigation';
 
-const HomeNavigator = createStackNavigator(
-  {
-    List: ListScreen,
-    PickupList: PickupListScreen,
-    Order: OrderScreen,
-    Profile: ProfileScreen,
-  }, {
-    initialRouteName: 'List',
-    transitionConfig: () => ({ screenInterpolator: () => null }),
-    headerMode: 'none',
-  }
-);
+const TabBarComponent = ({ navigation }) => {
+  const onSelect = (index) => {
+    const { [index]: selectedTabRoute } = navigation.state.routes;
+    navigation.navigate(selectedTabRoute.routeName);
+  };
 
-const HomeScreenContent = createAppContainer(HomeNavigator);
+  return (
+    <SafeAreaView>
+      <BottomNavigation selectedIndex={navigation.state.index} onSelect={onSelect}>
+        <BottomNavigationTab title='LIST'/>
+        <BottomNavigationTab title='ORDER'/>
+        <BottomNavigationTab title='PICKUP'/>
+        <BottomNavigationTab title='PROFILE'/>
+      </BottomNavigation>
+    </SafeAreaView>
+  );
+};
+
+const TabNavigator = createBottomTabNavigator({
+  List: ListScreen,
+  Order: OrderScreen,
+  Pickup: PickupListScreen,
+  Profile: ProfileScreen
+}, {
+  tabBarComponent: TabBarComponent,
+});
+
+const AppNavigator = createAppContainer(TabNavigator);
 
 const HomeScreen = (props) => {
   return (
-    <Layout style={{ flex: 1, marginTop: getStatusBarHeight() }}>
-      <HomeScreenContent screenProps={{ rootNavigation: props.navigation }}/>
-    </Layout>
+    <AppNavigator screenProps={{ rootNavigation: props.navigation }}/>
   );
 };
 

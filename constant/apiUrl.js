@@ -1,4 +1,4 @@
 module.exports = {
-    oldBackend: 'http://smartstore.machinevision.global:8000/api',
+    oldBackend: 'http://1dc490d3.ngrok.io/api',
     newBackend: 'http://smartstore.machinevision.global/api'
 }

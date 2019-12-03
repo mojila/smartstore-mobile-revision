@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Smartstore Mobile",
-    "slug": "smartstore-mobile",
+    "slug": "smartstore-mobile-revision",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": [
@@ -24,7 +24,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    }
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mojila.smartstore"
+    },
+    "android":{
+      "package": "com.mojila.smartstore"
+    },
+    "description": ""
   }
 }

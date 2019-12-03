@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Input, Text, Spinner } from 'react-native-ui-kitten';
+import { Layout, Input, Text, Spinner, Modal } from 'react-native-ui-kitten';
 import { ImageBackground, SafeAreaView, ScrollView } from 'react-native';
 import axios from 'axios';
-import BottomTab from '../component/bottomTab';
+import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { oldBackend } from '../constant/apiUrl';
 
 const ListScreen = (props) => {
@@ -11,20 +11,22 @@ const ListScreen = (props) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`${oldBackend}/materials/?format=json`)
+        axios.get(`${oldBackend}/materials/?format=json&limit=20`)
             .then(res => {
-                setMaterials(res.data);
+                setMaterials(res.data.results);
+                setLoading(false);
             })
-            .then(() => setLoading(false))
             .catch(err => console.log(new Error(err)));
     }, []);
 
     const search = (e) => {
         setLoading(true);
         setSearchKeyword(e);
-        axios.get(`${oldBackend}/materials/?format=json&search=${e}`)
-            .then(res => setMaterials(res.data))
-            .then(() => setLoading(false))
+        axios.get(`${oldBackend}/materials/?format=json&limit=20&search=${e}`)
+            .then(res => {
+                setMaterials(res.data.results);
+                setLoading(false);
+            })
             .catch(err => console.log(new Error(err)));
     };
 
@@ -33,7 +35,8 @@ const ListScreen = (props) => {
         <ImageBackground
             source={require('../assets/background.png')}
             style={{
-                height: 180
+                height: 180,
+                marginTop: getStatusBarHeight()
             }}>
             <Input
                 placeholder="Search Material"
@@ -53,7 +56,7 @@ const ListScreen = (props) => {
         </Layout> }
         <SafeAreaView>
             <ScrollView>
-                { materials.slice(0,20).map(d => <Layout key={d.id} 
+                { (materials.length > 0) && materials.slice(0,20).map(d => <Layout key={d.id} 
                     style={{ flexDirection: 'row', justifyContent: 'space-between', 
                     padding: 16, borderBottomWidth: 0.5, borderColor: '#e3e3e3' }}>
                     <Text>{d.name}</Text>
@@ -61,7 +64,6 @@ const ListScreen = (props) => {
                 </Layout>) }
             </ScrollView>
         </SafeAreaView>
-        <BottomTab indexTab={0} navigation={props.navigation}/>
     </React.Fragment>
     );
 }

@@ -30,6 +30,6 @@
     "android":{
       "package": "com.mojila.smartstore"
     },
-    "description": ""
+    "description": "Aplikasi ini digunakan untuk pencarian, pemesanan, dan rencana pengambilan material pada gudang Smartstore"
   }
 }

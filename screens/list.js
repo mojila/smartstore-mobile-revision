@@ -4,31 +4,56 @@ import { ImageBackground, SafeAreaView, ScrollView } from 'react-native';
 import axios from 'axios';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { oldBackend } from '../constant/apiUrl';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const ListScreen = (props) => {
     const [materials, setMaterials] = useState([]);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [loading, setLoading] = useState(true);
+    const [modalShow, setModalShow] = useState(false);
+    const [selectedMaterial, setSelectedMaterial] = useState({ id: 0, name: '' });
 
-    useEffect(() => {
-        axios.get(`${oldBackend}/materials/?format=json&limit=20`)
-            .then(res => {
-                setMaterials(res.data.results);
-                setLoading(false);
-            })
-            .catch(err => console.log(new Error(err)));
-    }, []);
-
-    const search = (e) => {
+    const search = async (e) => {
         setLoading(true);
         setSearchKeyword(e);
-        axios.get(`${oldBackend}/materials/?format=json&limit=20&search=${e}`)
+        await axios.get(`${oldBackend}/materials/?format=json&limit=20&search=${e}`)
             .then(res => {
                 setMaterials(res.data.results);
                 setLoading(false);
             })
             .catch(err => console.log(new Error(err)));
     };
+
+    const getMaterials = () => {
+        axios.get(`${oldBackend}/materials/?format=json&limit=20`)
+            .then(res => {
+                setMaterials(res.data.results);
+                setLoading(false);
+            })
+            .catch(err => console.log(new Error(err)));
+    };
+
+    const renderModal = () => (
+        <Layout level="3" style={{
+            width: 300,
+            padding: 16,
+            borderRadius: 4
+        }}>
+            <Text>Material Name: {selectedMaterial.name}</Text>
+            <Text>Category: {selectedMaterial.category ? selectedMaterial.category.name : 'Uncategorized'}</Text>
+            <Text>Stock: {selectedMaterial.quantity} {selectedMaterial.unit}</Text>
+            <Text>Company Code: {selectedMaterial.company_code}</Text>
+            <Text>Location: Rak {selectedMaterial.shelf_code} Box {selectedMaterial.box_code}</Text>
+        </Layout>
+    );
+
+    const selectMaterial = async (id) => {
+        let material = materials.filter(x => x.id === id)[0];
+        setSelectedMaterial(material);
+        setModalShow(!modalShow);
+    }
+
+    useEffect(getMaterials, []);
 
     return (
     <React.Fragment>
@@ -56,14 +81,23 @@ const ListScreen = (props) => {
         </Layout> }
         <SafeAreaView>
             <ScrollView>
-                { (materials.length > 0) && materials.slice(0,20).map(d => <Layout key={d.id} 
-                    style={{ flexDirection: 'row', justifyContent: 'space-between', 
-                    padding: 16, borderBottomWidth: 0.5, borderColor: '#e3e3e3' }}>
-                    <Text>{d.name}</Text>
-                    <Text>Stok: {d.quantity} {d.unit}</Text>
-                </Layout>) }
+                { (materials.length > 0) && materials.slice(0,20).map(d => <TouchableOpacity
+                    onPress={() => selectMaterial(d.id)} key={d.id}>
+                    <Layout 
+                        style={{ flexDirection: 'row', justifyContent: 'space-between', 
+                        padding: 16, borderBottomWidth: 0.5, borderColor: '#e3e3e3' }}>
+                        <Text>{d.name}</Text>
+                        <Text>Stok: {d.quantity} {d.unit}</Text>
+                    </Layout>
+                </TouchableOpacity>) }
             </ScrollView>
         </SafeAreaView>
+        <Modal allowBackdrop={true}
+            backdropStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+            onBackdropPress={() => setModalShow(!modalShow)}
+            visible={modalShow}>
+            {renderModal()}
+        </Modal>
     </React.Fragment>
     );
 }

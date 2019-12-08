@@ -5,6 +5,10 @@ import { mapping, light as lightTheme } from '@eva-design/eva';
 import { ApplicationProvider } from 'react-native-ui-kitten';
 import LoginScreen from './screens/login';
 import HomeScreen from './screens/home';
+// incoming version
+// import { SQLite } from "expo-sqlite";
+
+// const db = SQLite.openDatabase("db.db");
 
 const AppNavigator = createStackNavigator(
   {
@@ -26,6 +30,6 @@ const Main = (props) => {
       <App/>
     </ApplicationProvider>
   );
-};
+}
 
 export default Main;

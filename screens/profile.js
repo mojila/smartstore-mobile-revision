@@ -4,9 +4,15 @@ import { AsyncStorage } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import Axios from 'axios';
 import { newBackend } from '../constant/apiUrl'
+import { StackActions, NavigationActions } from 'react-navigation';
 
 const ProfileScreen = (props) => {
     const [userProfile, setUserProfile] = useState({ first_name: '', last_name: '', employee_id: '' });
+
+    const resetToLogin = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'Login' })]
+    });
 
     const getProfile = async () => {
         let profile = await AsyncStorage.getItem('@auth_profile');
@@ -15,9 +21,12 @@ const ProfileScreen = (props) => {
             setUserProfile(JSON.parse(profile));
         }
     }
-    
+
     useEffect(() => {
         getProfile();
+
+        return function cleanup() {
+        };
     }, []);
 
     const logout = async () => {
@@ -32,7 +41,8 @@ const ProfileScreen = (props) => {
 
             await AsyncStorage.removeItem('@auth_token');
             await AsyncStorage.removeItem('@auth_profile');
-            await props.screenProps.rootNavigation.navigate('Login');
+            
+            props.screenProps.rootNavigation.dispatch(resetToLogin);
         } catch(e) {
             console.error(Error(e));
         }

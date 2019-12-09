@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BottomNavigationTab, BottomNavigation } from 'react-native-ui-kitten';
 import { createAppContainer, SafeAreaView } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
@@ -6,7 +6,6 @@ import ListScreen from './list';
 import ProfileScreen from './profile';
 import OrderScreen from './order';
 import PickupListScreen from './pickupList';
-import { StackActions, NavigationActions } from 'react-navigation';
 
 const TabBarComponent = ({ navigation }) => {
   const onSelect = (index) => {

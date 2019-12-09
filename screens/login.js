@@ -4,20 +4,20 @@ import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { AsyncStorage } from 'react-native';
 import axios from 'axios';
 import { newBackend, oldBackend } from '../constant/apiUrl';
+import { NavigationActions, StackActions } from 'react-navigation';
 
 const LoginScreen = (props) => {
     const [isError, setIsError] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('admin');
+    const [password, setPassword] = useState('12345678');
     const [isConnect, setIsConnect] = useState(false);
-    const navigation = props.navigation;
 
     const checkLogin = async () => {
         try {
             let value = await AsyncStorage.getItem('@auth_token')
 
             if (value !== null) {
-                props.navigation.navigate('Home', { parentNavigation: navigation });
+                props.navigation.dispatch(resetToHome);
             }
         } catch (_e) {
         }
@@ -40,6 +40,11 @@ const LoginScreen = (props) => {
         }
     }
 
+    const resetToHome = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'Home' })]
+    });
+
     const checkConnection = async () => {
         await axios.get(`${oldBackend}?format=json`)
             .then(() => setIsConnect(true))
@@ -52,6 +57,9 @@ const LoginScreen = (props) => {
     useEffect(() => {
         checkLogin();
         checkConnection();
+
+        return function cleanup() {
+        };
     }, []);
 
     return (

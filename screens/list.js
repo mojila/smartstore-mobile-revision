@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Input, Text, Spinner, Modal } from 'react-native-ui-kitten';
+import { Layout, Input, Text, Spinner, Modal, Button } from 'react-native-ui-kitten';
 import { ImageBackground, SafeAreaView, ScrollView } from 'react-native';
 import axios from 'axios';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
-import { oldBackend } from '../constant/apiUrl';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { oldBackend } from '../constant/apiUrl';
 
 const ListScreen = (props) => {
     const [materials, setMaterials] = useState([]);
@@ -12,11 +12,13 @@ const ListScreen = (props) => {
     const [loading, setLoading] = useState(true);
     const [modalShow, setModalShow] = useState(false);
     const [selectedMaterial, setSelectedMaterial] = useState({ id: 0, name: '' });
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
 
     const search = async (e) => {
         setLoading(true);
         setSearchKeyword(e);
-        await axios.get(`${oldBackend}/materials/?format=json&limit=20&search=${e}`)
+        await axios.get(`${oldBackend}/materials/?format=json&limit=20&ordering=-quantity&search=${e}`)
             .then(res => {
                 setMaterials(res.data.results);
                 setLoading(false);
@@ -25,7 +27,7 @@ const ListScreen = (props) => {
     };
 
     const getMaterials = () => {
-        axios.get(`${oldBackend}/materials/?format=json&limit=20`)
+        axios.get(`${oldBackend}/materials/?format=json&limit=20&ordering=-quantity`)
             .then(res => {
                 setMaterials(res.data.results);
                 setLoading(false);
@@ -37,13 +39,18 @@ const ListScreen = (props) => {
         <Layout level="3" style={{
             width: 300,
             padding: 16,
-            borderRadius: 4
+            borderRadius: 4,
+            backgroundColor: '#ffffff'
         }}>
             <Text>Material Name: {selectedMaterial.name}</Text>
             <Text>Category: {selectedMaterial.category ? selectedMaterial.category.name : 'Uncategorized'}</Text>
             <Text>Stock: {selectedMaterial.quantity} {selectedMaterial.unit}</Text>
             <Text>Company Code: {selectedMaterial.company_code}</Text>
             <Text>Location: Rak {selectedMaterial.shelf_code} Box {selectedMaterial.box_code}</Text>
+            <Layout style={{ flexDirection: 'row', marginTop: 4, justifyContent: 'space-between',  }}>
+                <Button status="success" disabled={true} style={{ flex: 1, marginRight: 2 }}>Order</Button>
+                <Button status="primary" disabled={true} style={{ flex: 1 }}>Pickup</Button>
+            </Layout>
         </Layout>
     );
 

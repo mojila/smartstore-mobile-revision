@@ -6,6 +6,18 @@ import axios from 'axios';
 import { newBackend, oldBackend } from '../constant/apiUrl';
 import { NavigationActions, StackActions } from 'react-navigation';
 
+export const refreshToken = async () => {
+    let token = await AsyncStorage.getItem('@auth_token');
+
+    await axios.get(`${newBackend}/refresh_token`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    .then(async (res) => await AsyncStorage.setItem('@auth_token', res.data['new_token']))
+    .catch(err => console.error(Error(err)));
+};
+
 const LoginScreen = (props) => {
     const [isError, setIsError] = useState(false);
     const [username, setUsername] = useState('admin');
@@ -31,7 +43,7 @@ const LoginScreen = (props) => {
             }).then(res => res.data);
             
             if (value !== null) {
-                await AsyncStorage.setItem('@auth_token', value.token);
+                await AsyncStorage.setItem('@auth_token', value['token']);
                 await AsyncStorage.setItem('@auth_profile', JSON.stringify(value.user));
                 await checkLogin();
             }

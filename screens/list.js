@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Input, Text, Spinner, Modal, Button } from 'react-native-ui-kitten';
+import { Layout, Input, Text, Spinner, Modal, Button, Icon } from 'react-native-ui-kitten';
 import { ImageBackground, SafeAreaView, ScrollView } from 'react-native';
 import axios from 'axios';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
@@ -12,8 +12,7 @@ const ListScreen = (props) => {
     const [loading, setLoading] = useState(true);
     const [modalShow, setModalShow] = useState(false);
     const [selectedMaterial, setSelectedMaterial] = useState({ id: 0, name: '' });
-    const [categories, setCategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [quantity, setQuantity] = useState(1);
 
     const search = async (e) => {
         setLoading(true);
@@ -47,12 +46,25 @@ const ListScreen = (props) => {
             <Text>Stock: {selectedMaterial.quantity} {selectedMaterial.unit}</Text>
             <Text>Company Code: {selectedMaterial.company_code}</Text>
             <Text>Location: Rak {selectedMaterial.shelf_code} Box {selectedMaterial.box_code}</Text>
+            <Layout style={{ marginTop: 8, flexDirection: 'row', paddingTop: 4, borderTopColor: '#e3e3e3', borderTopWidth: 1 }}>
+                <Button status="control" icon={renderIconDown}
+                    style={{ marginRight: 2 }}></Button>
+
+                <Input value={quantity.toString()} keyboardType="number-pad"
+                    onChangeText={e => setQuantity(Number(e))} 
+                    style={{ flex: 1, marginRight: 2, marginTop: 1 }}/>
+                
+                <Button status="control" icon={renderIconUp}></Button>
+            </Layout>
             <Layout style={{ flexDirection: 'row', marginTop: 4, justifyContent: 'space-between',  }}>
-                <Button status="success" disabled={true} style={{ flex: 1, marginRight: 2 }}>Order</Button>
-                <Button status="primary" disabled={true} style={{ flex: 1 }}>Pickup</Button>
+                <Button status="success" disabled={quantity <= selectedMaterial.quantity} style={{ flex: 1, marginRight: 2 }}>Order</Button>
+                <Button status="primary" disabled={quantity > selectedMaterial.quantity} style={{ flex: 1 }}>Pickup</Button>
             </Layout>
         </Layout>
     );
+
+    const renderIconUp = (style) => (<Icon name="arrow-ios-upward-outline" {...style}/>)
+    const renderIconDown = (style) => (<Icon name="arrow-ios-downward-outline" {...style}/>)
 
     const selectMaterial = async (id) => {
         let material = materials.filter(x => x.id === id)[0];
@@ -60,7 +72,9 @@ const ListScreen = (props) => {
         setModalShow(!modalShow);
     }
 
-    useEffect(getMaterials, []);
+    useEffect(() => {
+        getMaterials();
+    }, []);
 
     return (
     <React.Fragment>

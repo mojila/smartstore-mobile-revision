@@ -5,6 +5,7 @@ import { getStatusBarHeight } from 'react-native-status-bar-height';
 import Axios from 'axios';
 import { newBackend } from '../constant/apiUrl'
 import { StackActions, NavigationActions } from 'react-navigation';
+import { refreshToken } from './login';
 
 const ProfileScreen = (props) => {
     const [userProfile, setUserProfile] = useState({ first_name: '', last_name: '', employee_id: '' });
@@ -24,6 +25,7 @@ const ProfileScreen = (props) => {
 
     useEffect(() => {
         getProfile();
+        refreshToken();
 
         return function cleanup() {
         };

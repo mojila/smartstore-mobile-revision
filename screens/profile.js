@@ -5,7 +5,6 @@ import { getStatusBarHeight } from 'react-native-status-bar-height';
 import Axios from 'axios';
 import { newBackend } from '../constant/apiUrl'
 import { StackActions, NavigationActions } from 'react-navigation';
-import { refreshToken } from './login';
 
 const ProfileScreen = (props) => {
     const [userProfile, setUserProfile] = useState({ first_name: '', last_name: '', employee_id: '' });
@@ -19,16 +18,16 @@ const ProfileScreen = (props) => {
         let profile = await AsyncStorage.getItem('@auth_profile');
 
         if (profile !== null) {
-            setUserProfile(JSON.parse(profile));
+            return setUserProfile(JSON.parse(profile));
         }
+
+        return;
     }
 
     useEffect(() => {
         getProfile();
-        refreshToken();
 
-        return function cleanup() {
-        };
+        return () => {};
     }, []);
 
     const logout = async () => {
@@ -44,7 +43,7 @@ const ProfileScreen = (props) => {
             await AsyncStorage.removeItem('@auth_token');
             await AsyncStorage.removeItem('@auth_profile');
             
-            props.screenProps.rootNavigation.dispatch(resetToLogin);
+            await props.screenProps.rootNavigation.dispatch(resetToLogin);
         } catch(e) {
             console.error(Error(e));
         }

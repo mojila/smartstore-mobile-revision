@@ -6,33 +6,21 @@ import axios from 'axios';
 import { newBackend, oldBackend } from '../constant/apiUrl';
 import { NavigationActions, StackActions } from 'react-navigation';
 
-export const refreshToken = async () => {
-    let token = await AsyncStorage.getItem('@auth_token');
-
-    await axios.get(`${newBackend}/refresh_token`, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-    .then(async (res) => await AsyncStorage.setItem('@auth_token', res.data['new_token']))
-    .catch(err => console.error(Error(err)));
-};
-
 const LoginScreen = (props) => {
     const [isError, setIsError] = useState(false);
-    const [username, setUsername] = useState('admin');
-    const [password, setPassword] = useState('12345678');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [isConnect, setIsConnect] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
 
     const checkLogin = async () => {
-        try {
-            let value = await AsyncStorage.getItem('@auth_token')
+        let value = await AsyncStorage.getItem('@auth_token');
 
-            if (value !== null) {
-                props.navigation.dispatch(resetToHome);
-            }
-        } catch (_e) {
+        if (value !== null) {
+            return props.navigation.dispatch(resetToHome);
         }
+        
+        return setShowInfo(true);
     };
 
     const login = async () => {
@@ -57,21 +45,20 @@ const LoginScreen = (props) => {
         actions: [NavigationActions.navigate({ routeName: 'Home' })]
     });
 
-    const checkConnection = async () => {
-        await axios.get(`${oldBackend}?format=json`)
+    const checkConnection = () => {
+        axios.get(`${oldBackend}?format=json`)
             .then(() => setIsConnect(true))
             .catch(() => setIsConnect(false));
-        await axios.get(`${newBackend}/check`)
+        axios.get(`${newBackend}/check`)
             .then(() => setIsConnect(true))
             .catch(() => setIsConnect(false));
     }
 
     useEffect(() => {
-        checkLogin();
         checkConnection();
+        checkLogin();
 
-        return function cleanup() {
-        };
+        return () => {};
     }, []);
 
     return (
@@ -89,6 +76,8 @@ const LoginScreen = (props) => {
                     onChangeText={e => setPassword(e)}/>
                     {isError && <Text style={{ textAlign: 'center', marginTop: 8}}
                         status="danger">Email or Password is Incorrect.</Text>} 
+                    {showInfo && <Text style={{ textAlign: 'center', marginTop: 8}}
+                        status="info">Please Login First.</Text>} 
                     {!isConnect && <Text style={{ textAlign: 'center', marginTop: 8}}
                         status="danger">App Not Connected to Server.</Text>} 
                 <Button

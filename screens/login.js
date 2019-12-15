@@ -4,23 +4,23 @@ import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { AsyncStorage } from 'react-native';
 import axios from 'axios';
 import { newBackend, oldBackend } from '../constant/apiUrl';
+import { NavigationActions, StackActions } from 'react-navigation';
 
 const LoginScreen = (props) => {
     const [isError, setIsError] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isConnect, setIsConnect] = useState(false);
-    const navigation = props.navigation;
+    const [showInfo, setShowInfo] = useState(false);
 
     const checkLogin = async () => {
-        try {
-            let value = await AsyncStorage.getItem('@auth_token')
+        let value = await AsyncStorage.getItem('@auth_token');
 
-            if (value !== null) {
-                props.navigation.navigate('Home', { parentNavigation: navigation });
-            }
-        } catch (_e) {
+        if (value !== null) {
+            return props.navigation.dispatch(resetToHome);
         }
+        
+        return setShowInfo(true);
     };
 
     const login = async () => {
@@ -31,7 +31,7 @@ const LoginScreen = (props) => {
             }).then(res => res.data);
             
             if (value !== null) {
-                await AsyncStorage.setItem('@auth_token', value.token);
+                await AsyncStorage.setItem('@auth_token', value['token']);
                 await AsyncStorage.setItem('@auth_profile', JSON.stringify(value.user));
                 await checkLogin();
             }
@@ -40,18 +40,25 @@ const LoginScreen = (props) => {
         }
     }
 
-    const checkConnection = async () => {
-        await axios.get(`${oldBackend}?format=json`)
+    const resetToHome = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'Home' })]
+    });
+
+    const checkConnection = () => {
+        axios.get(`${oldBackend}?format=json`)
             .then(() => setIsConnect(true))
             .catch(() => setIsConnect(false));
-        await axios.get(`${newBackend}/check`)
+        axios.get(`${newBackend}/check`)
             .then(() => setIsConnect(true))
             .catch(() => setIsConnect(false));
     }
 
     useEffect(() => {
-        checkLogin();
         checkConnection();
+        checkLogin();
+
+        return () => {};
     }, []);
 
     return (
@@ -69,6 +76,8 @@ const LoginScreen = (props) => {
                     onChangeText={e => setPassword(e)}/>
                     {isError && <Text style={{ textAlign: 'center', marginTop: 8}}
                         status="danger">Email or Password is Incorrect.</Text>} 
+                    {showInfo && <Text style={{ textAlign: 'center', marginTop: 8}}
+                        status="info">Please Login First.</Text>} 
                     {!isConnect && <Text style={{ textAlign: 'center', marginTop: 8}}
                         status="danger">App Not Connected to Server.</Text>} 
                 <Button

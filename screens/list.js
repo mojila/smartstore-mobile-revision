@@ -6,6 +6,7 @@ import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { oldBackend, newBackend } from '../constant/apiUrl';
 import moment from 'moment';
+import { StackActions, NavigationActions } from 'react-navigation';
 
 const ListScreen = (props) => {
     const [materials, setMaterials] = useState([]);
@@ -63,7 +64,9 @@ const ListScreen = (props) => {
                 Authorization: `Bearer ${token}`
             }
         }).then(res => res.status === 200 ? setSuccessPrompt(true):'')
-        .then(() => setModalShow(false))
+        .then(() => {
+            setModalShow(false);
+        })
         .catch(() => {
             setErrorPrompt(true);
             setModalShow(false);

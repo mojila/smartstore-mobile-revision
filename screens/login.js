@@ -75,7 +75,7 @@ const LoginScreen = (props) => {
                     value={password}
                     onChangeText={e => setPassword(e)}/>
                     {isError && <Text style={{ textAlign: 'center', marginTop: 8}}
-                        status="danger">Email or Password is Incorrect.</Text>} 
+                        status="danger">Username or Password is Incorrect.</Text>} 
                     {showInfo && <Text style={{ textAlign: 'center', marginTop: 8}}
                         status="info">Please Login First.</Text>} 
                     {!isConnect && <Text style={{ textAlign: 'center', marginTop: 8}}

@@ -55,11 +55,11 @@ const OrderScreen = (props) => {
                         <Spinner/>
                     </Layout>
                 </Layout> }
-                {!loading && orders.length < 1 && <Layout style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                {!loading && orders.length < 1 && <Layout style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 16 }}>
                     <Text>There is no order item.</Text>
                 </Layout>}
                 {!loading && orders.length > 0 && orders.map((d, i) => <TouchableHighlight key={i}>
-                    <OrderItem name={d.material.name} date={d.requestfor} quantity={d.qty} unit={d.material.unit}/>
+                    <OrderItem name={d.material ? d.material.name:'-'} date={d.requestfor} quantity={d.qty} unit={d.material ? d.material.unit:'piece'}/>
                 </TouchableHighlight>)}
             </ScrollView>
         </SafeAreaView>

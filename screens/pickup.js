@@ -8,7 +8,7 @@ import PickupItem from '../component/pickupItem';
 import Axios from 'axios';
 import { newBackend } from '../constant/apiUrl';
 
-const PickupListScreen = (props) => {
+const PickupScreen = (props) => {
     const [pickups, setPickups] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -54,15 +54,15 @@ const PickupListScreen = (props) => {
                         <Spinner/>
                     </Layout>
                 </Layout> }
-                {!loading && pickups.length < 1 && <Layout style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                {!loading && pickups.length < 1 && <Layout style={{ flexDirection: 'row', marginTop: 16, justifyContent: 'center' }}>
                     <Text>There is no pickup item.</Text>
                 </Layout>}
                 {!loading && pickups.length > 0 && pickups.map((d, i) => <TouchableHighlight key={i}>
-                    <PickupItem name={d.material.name} quantity={d.qty} unit={d.material.unit}/>
+                    <PickupItem name={d.material ? d.material.name:'-'} quantity={d.qty} unit={d.material ? d.material.name:'piece'}/>
                 </TouchableHighlight>)}
             </ScrollView>
         </SafeAreaView>
     </React.Fragment>);
 }
 
-export default PickupListScreen;
+export default PickupScreen;

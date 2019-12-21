@@ -54,7 +54,7 @@ const ProfileScreen = (props) => {
             <Layout style={{ alignItems: 'center', marginBottom: 16 }}>
                 <Avatar size="giant" source={require('../assets/person.png')}
                     style={{ borderWidth: 1, borderColor: '#e3e3e3' }}/>
-                    <Text category="h4" style={{ marginTop: 8 }}>{`${userProfile.first_name} ${userProfile.last_name}`}</Text>
+                    <Text category="h4" style={{ marginTop: 8 }}>{`${userProfile.first_name}`}</Text>
             </Layout>
             <Button
                 status="danger"

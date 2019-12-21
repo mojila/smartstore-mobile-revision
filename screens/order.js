@@ -21,9 +21,16 @@ const OrderScreen = (props) => {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
-            }).then(res => setOrder(res.data['data']))
+            }).then(res => {
+                if (res.data) {
+                    setOrder(res.data['data']);
+                }
+            })
             .then(() => setLoading(false))
-            .catch(err => console.warn(err));
+            .catch(err => {
+                console.warn(err);
+                setLoading(false);
+            });
         }
     };
 
@@ -48,6 +55,9 @@ const OrderScreen = (props) => {
                         <Spinner/>
                     </Layout>
                 </Layout> }
+                {!loading && orders.length < 1 && <Layout style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                    <Text>There is no order item.</Text>
+                </Layout>}
                 {!loading && orders.length > 0 && orders.map((d, i) => <TouchableHighlight key={i}>
                     <OrderItem name={d.material.name} date={d.requestfor} quantity={d.qty} unit={d.material.unit}/>
                 </TouchableHighlight>)}

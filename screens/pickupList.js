@@ -21,9 +21,16 @@ const PickupListScreen = (props) => {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
-            }).then(res => setPickups(res.data['data']))
+            }).then(res => {
+                if (res.data) {
+                    setPickups(res.data['data']);
+                }
+            })
             .then(() => setLoading(false))
-            .catch(err => console.warn(err));
+            .catch(err => {
+                console.warn(err);
+                setLoading(false);
+            });
         }
     }
 
@@ -47,6 +54,9 @@ const PickupListScreen = (props) => {
                         <Spinner/>
                     </Layout>
                 </Layout> }
+                {!loading && pickups.length < 1 && <Layout style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                    <Text>There is no pickup item.</Text>
+                </Layout>}
                 {!loading && pickups.length > 0 && pickups.map((d, i) => <TouchableHighlight key={i}>
                     <PickupItem name={d.material.name} quantity={d.qty} unit={d.material.unit}/>
                 </TouchableHighlight>)}

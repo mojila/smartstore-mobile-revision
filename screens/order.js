@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Text, Spinner, Button } from 'react-native-ui-kitten';
+import { Layout, Text, Spinner, Button, Icon, Datepicker, Input } from 'react-native-ui-kitten';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { SafeAreaView } from 'react-navigation';
 import { ScrollView, TouchableHighlight } from 'react-native-gesture-handler';
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, TouchableOpacity, Modal } from 'react-native';
 import OrderItem from '../component/orderItem';
 import Axios from 'axios';
 import { newBackend } from '../constant/apiUrl';
+import moment from 'moment';
 
 const OrderScreen = (props) => {
     const [orders, setOrder] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [quantity, setQuantity] = useState(10);
+    const [notes, setNotes] = useState('');
+    const [requestfor, setRequestfor] = useState(new Date());
+    const [type, setType] = useState('');
+    const [selectedOrder, setSelectedOrder] = useState({ 
+        material: { id: 1, name: 'adaw', unit: 'pieces' }, 
+        qty: 1, notes: '', requestfor: '', type: '' 
+    });
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -21,11 +31,77 @@ const OrderScreen = (props) => {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
-            }).then(res => setOrder(res.data['data']))
+            }).then(res => {
+                if (res.data) {
+                    setOrder(res.data['data']);
+                }
+            })
             .then(() => setLoading(false))
-            .catch(err => console.warn(err));
+            .catch(err => {
+                setOrder([]);
+                setLoading(false);
+                console.warn(err);
+            });
         }
     };
+
+    const deleteOrder = async (id) => {
+        let token = await AsyncStorage.getItem('@auth_token');
+
+        if (token !== null) {
+            Axios.delete(`${newBackend}/order/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(() => {
+                fetchOrders();
+                setShowModal(false);
+            })
+            .catch(err => {
+                fetchOrders();
+                setShowModal(false);
+                console.warn(err);
+            });
+        }
+    };
+
+    const updateOrder = async (id) => {
+        let token = await AsyncStorage.getItem('@auth_token');
+
+        if (token !== null) {
+            Axios.put(`${newBackend}/order/${id}`, {
+                material_id: selectedOrder.material.id,
+                qty: quantity,
+                type: 'pesanan baru',
+                notes: notes,
+                requestfor: moment(requestfor).format('YYYY-MM-DD')
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(() => {
+                fetchOrders();
+                setShowModal(false);
+            })
+            .catch(err => {
+                fetchOrders();
+                setShowModal(false);
+                console.warn(err);
+            });
+        }
+    };
+
+    const addQuantity = () => setQuantity(quantity + 1);
+
+    const reduceQuantity = () => {
+        if (quantity > 1) {
+            return setQuantity(quantity - 1);
+        }
+        return;
+    };
+
+    const renderIconUp = (style) => (<Icon name="arrow-ios-upward-outline" {...style}/>);
+    const renderIconDown = (style) => (<Icon name="arrow-ios-downward-outline" {...style}/>);
 
     useEffect(() => {
         fetchOrders();
@@ -38,21 +114,77 @@ const OrderScreen = (props) => {
                 <Button size="tiny" onPress={fetchOrders}>Refresh</Button>
             </Layout>
             <SafeAreaView>
-            <ScrollView>
-                { loading && <Layout style={{ flexDirection: 'row', justifyContent: 'space-between', 
-                    padding: 8, borderBottomColor: '#e3e3e3', borderBottomWidth: 1 }}>
-                    <Layout style={{ flex: 1 }}>
-                        <Text>Loading Order Item ...</Text>
+                <ScrollView>
+                    { loading && <Layout style={{ flexDirection: 'row', justifyContent: 'space-between', 
+                        padding: 8, borderBottomColor: '#e3e3e3', borderBottomWidth: 1 }}>
+                        <Layout style={{ flex: 1 }}>
+                            <Text>Loading Order Item ...</Text>
+                        </Layout>
+                        <Layout>
+                            <Spinner/>
+                        </Layout>
+                    </Layout> }
+                    {!loading && orders.length < 1 && <Layout style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 16 }}>
+                        <Text>There is no order item.</Text>
+                    </Layout>}
+                    {!loading && orders.length > 0 && orders.map((d, i) => <TouchableOpacity key={i}
+                        onPress={() => {
+                            setSelectedOrder(orders.filter(x => x.id === d.id)[0]);
+                            setQuantity(orders.filter(x => x.id === d.id)[0].qty);
+                            setNotes(orders.filter(x => x.id === d.id)[0].notes);
+                            setShowModal(true);
+                        }}>
+                        <OrderItem name={d.material ? d.material.name.substring(0,10):'-'} date={d.requestfor} quantity={d.qty} unit={d.material ? d.material.unit:'piece'}/>
+                    </TouchableOpacity>)}
+                </ScrollView>
+            </SafeAreaView>
+            <Modal visible={showModal} transparent>
+                <Layout style={{ padding: 8, backgroundColor: 'white', borderWidth: 1, borderColor: '#e3e3e3',
+                    borderRadius: 4, margin: 32, marginTop: 100 }}>
+                    <Layout style={{ flexDirection: 'column', marginBottom: 8 }}>
+                        <Layout style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                            <Layout>
+                                <Text>Material Name: </Text>
+                            </Layout>
+                            <Layout>
+                                <Text>{selectedOrder.material.name}</Text>
+                            </Layout>
+                        </Layout>
+                        <Layout style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                            <Layout>
+                                <Text>Order quantity: </Text>
+                            </Layout>
+                            <Layout>
+                                <Text>{selectedOrder.qty} {selectedOrder.material.unit}</Text>
+                            </Layout>
+                        </Layout>
                     </Layout>
-                    <Layout>
-                        <Spinner/>
+                    <Layout style={{ marginBottom: 8, flexDirection: 'row' }}>
+                        <Button status="control" icon={renderIconDown}
+                            style={{ marginRight: 2 }} onPress={reduceQuantity}></Button>
+
+                        <Input value={quantity.toString()} keyboardType="number-pad"
+                            onChangeText={e => setQuantity(Number(e))} 
+                            style={{ flex: 1, marginRight: 2, marginTop: 1 }}/>
+                        
+                        <Button status="control" icon={renderIconUp} onPress={addQuantity}></Button>
                     </Layout>
-                </Layout> }
-                {!loading && orders.length > 0 && orders.map((d, i) => <TouchableHighlight key={i}>
-                    <OrderItem name={d.material.name} date={d.requestfor} quantity={d.qty} unit={d.material.unit}/>
-                </TouchableHighlight>)}
-            </ScrollView>
-        </SafeAreaView>
+                    <Layout style={{ marginTop: 8 }}>
+                        <Datepicker date={requestfor} onSelect={setRequestfor}/>
+                        <Input label="Notes" value={notes} onChangeText={setNotes}/>
+                    </Layout>
+                    <Layout style={{ flexDirection: 'row', marginTop: 8 }}>
+                        <Button style={{ flex: 1, marginRight: 8 }} size="small" status="danger"
+                            onPress={() => deleteOrder(selectedOrder.id)}>Cancel Pickup</Button>
+                        <Button style={{ flex: 1 }} size="small" status="primary"
+                            onPress={() => updateOrder(selectedOrder.id)}>Update Pickup</Button>
+                    </Layout>
+                    <Layout style={{ marginTop: 8, flexDirection: 'row' }}>
+                        <Button style={{ flex: 1 }} size="small" appearance='outline' 
+                            onPress={() => setShowModal(false)}>Close</Button>
+                    </Layout>
+                </Layout>
+            </Modal>
         </React.Fragment>
     );
 }

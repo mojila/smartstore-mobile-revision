@@ -24,14 +24,20 @@ const ListScreen = (props) => {
         return axios.get(`${oldBackend}/materials/?format=json&limit=20&ordering=-quantity&search=${searchKeyword}`)
             .then((res) => setMaterials(res.data.results))
             .then(() => setLoading(false))
-            .catch(err => console.log(new Error(err)));
+            .catch(err => {
+                console.log(new Error(err));
+                setLoading(false);
+            });
     };
 
     const getMaterials = () => {
         return axios.get(`${oldBackend}/materials/?format=json&limit=20&ordering=-quantity`)
             .then((res) => setMaterials(res.data.results))
             .then(() => setLoading(false))
-            .catch(err => console.log(new Error(err)));
+            .catch(err => {
+                console.log(new Error(err));
+                setLoading(false);
+            });
     };
 
     const addQuantity = () => setQuantity(quantity + 1);
@@ -57,7 +63,9 @@ const ListScreen = (props) => {
                 Authorization: `Bearer ${token}`
             }
         }).then(res => res.status === 200 ? setSuccessPrompt(true):'')
-        .then(() => setModalShow(false))
+        .then(() => {
+            setModalShow(false);
+        })
         .catch(() => {
             setErrorPrompt(true);
             setModalShow(false);

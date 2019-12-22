@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 import ListScreen from './list';
 import ProfileScreen from './profile';
 import OrderScreen from './order';
-import PickupListScreen from './pickupList';
+import PickupScreen from './pickup';
 
 const TabBarComponent = ({ navigation }) => {
   const onSelect = (index) => {
@@ -28,7 +28,7 @@ const TabBarComponent = ({ navigation }) => {
 const TabNavigator = createBottomTabNavigator({
   List: ListScreen,
   Order: OrderScreen,
-  Pickup: PickupListScreen,
+  Pickup: PickupScreen,
   Profile: ProfileScreen
 }, {
   tabBarComponent: TabBarComponent,

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Layout, Text, Spinner, Button, Icon, Datepicker, Input } from 'react-native-ui-kitten';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { SafeAreaView } from 'react-navigation';
-import { ScrollView, TouchableHighlight } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import { AsyncStorage, TouchableOpacity, Modal } from 'react-native';
 import OrderItem from '../component/orderItem';
 import Axios from 'axios';

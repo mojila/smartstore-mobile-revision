@@ -6,7 +6,6 @@ import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { oldBackend, newBackend } from '../constant/apiUrl';
 import moment from 'moment';
-import { StackActions, NavigationActions } from 'react-navigation';
 
 const ListScreen = (props) => {
     const [materials, setMaterials] = useState([]);

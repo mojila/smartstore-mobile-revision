@@ -122,7 +122,7 @@ const PickupScreen = (props) => {
                         setQuantity(pickups.filter(x => x.id === d.id)[0].qty);
                         setShowModal(true);
                     }}>
-                    <PickupItem name={d.material ? d.material.name:'-'} quantity={d.qty} unit={d.material ? d.material.name:'piece'}/>
+                    <PickupItem name={d.material ? d.material.name.substring(0,10):'-'} quantity={d.qty} unit={d.material ? d.material.name:'piece'}/>
                 </TouchableOpacity>)}
             </ScrollView>
         </SafeAreaView>

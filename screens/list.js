@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Input, Text, Spinner, Modal, Button, Icon, Datepicker } from 'react-native-ui-kitten';
+import { Layout, Input, Text, Spinner, Modal, Button, Icon, Datepicker, Avatar } from 'react-native-ui-kitten';
 import { ImageBackground, SafeAreaView, ScrollView, AsyncStorage } from 'react-native';
 import axios from 'axios';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { oldBackend, newBackend } from '../constant/apiUrl';
 import moment from 'moment';
+import empty_icon from '../assets/empty.png';
 
 const ListScreen = (props) => {
     const [materials, setMaterials] = useState([]);
@@ -18,11 +19,13 @@ const ListScreen = (props) => {
     const [errorPrompt, setErrorPrompt] = useState(false);
     const [date, setDate] = useState(new Date());
     const [notes, setNotes] = useState('');
+    const [newMaterials, setNewMaterials] = useState([]);
 
     const search = () => {
         setLoading(true);
+
         return axios.get(`${oldBackend}/materials/?format=json&limit=20&ordering=-quantity&search=${searchKeyword}`)
-            .then((res) => setMaterials(res.data.results))
+            .then((res) => getNewMaterialAPI(res.data.results))
             .then(() => setLoading(false))
             .catch(err => {
                 console.log(new Error(err));
@@ -30,9 +33,39 @@ const ListScreen = (props) => {
             });
     };
 
+    const formatPrice = (num) => {
+        return 'Rp. ' + Number(num).toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    };
+
+    const getNewMaterialAPI = (data) => {
+        axios.get(`${newBackend}/material`)
+            .then(res => {
+                let temp_materials = data.map(d => {
+                    let from_old = res.data.data.filter(x => x.id === d.id);
+                    
+                    if (from_old.length > 0) {
+                        d.price = from_old[0].price || 0;
+                        d.photo = from_old[0].photo ? { uri: from_old[0].photo } : empty_icon;
+                        d.thumbnail = from_old[0].thumbnail ? { uri: from_old[0].thumbnail } : empty_icon;
+                    } else {
+                        d.price = 0;
+                        d.photo = empty_icon;
+                        d.thumbnail = empty_icon;
+                    }
+
+                    return d;
+                });
+
+                setMaterials(temp_materials);
+            })
+            .catch(err => {
+                console.log(new Error(err));
+            })
+    };
+
     const getMaterials = () => {
-        return axios.get(`${oldBackend}/materials/?format=json&limit=20&ordering=-quantity`)
-            .then((res) => setMaterials(res.data.results))
+        axios.get(`${oldBackend}/materials/?format=json&limit=20&ordering=-quantity`)
+            .then((res) => getNewMaterialAPI(res.data.results || []))
             .then(() => setLoading(false))
             .catch(err => {
                 console.log(new Error(err));
@@ -118,7 +151,13 @@ const ListScreen = (props) => {
             borderRadius: 4,
             backgroundColor: '#ffffff'
         }}>
+            <ImageBackground
+                source={selectedMaterial.photo}
+                style={{
+                    height: 120
+                }}/>
             <Text>Material Name: {selectedMaterial.name}</Text>
+            <Text>Price: {formatPrice(selectedMaterial.price)}</Text>
             <Text>Category: {selectedMaterial.category ? selectedMaterial.category.name : 'Uncategorized'}</Text>
             <Text>Stock: {selectedMaterial.quantity} {selectedMaterial.unit}</Text>
             <Text>Company Code: {selectedMaterial.company_code}</Text>
@@ -151,6 +190,7 @@ const ListScreen = (props) => {
 
     const selectMaterial = async (id) => {
         let material = materials.filter(x => x.id === id)[0];
+        console.log(material);
         setSelectedMaterial(material);
         setQuantity(1);
 
@@ -159,7 +199,7 @@ const ListScreen = (props) => {
 
     useEffect(() => {
         getMaterials();
-    }, []);
+    }, [setLoading, setMaterials]);
 
     return (
     <React.Fragment>
@@ -187,13 +227,19 @@ const ListScreen = (props) => {
             </Layout>
         </Layout> }
         <SafeAreaView>
-            <ScrollView>
+            <ScrollView style={{ marginBottom: 16 }}>
                 { !loading && materials.length > 0 && materials.slice(0,20).map(d => <TouchableOpacity
                     onPress={() => selectMaterial(d.id)} key={d.id}>
                     <Layout 
                         style={{ flexDirection: 'row', justifyContent: 'space-between', 
-                        padding: 16, borderBottomWidth: 0.5, borderColor: '#e3e3e3' }}>
-                        <Text>{d.name}</Text>
+                        padding: 16, borderBottomWidth: 0.5, borderColor: '#e3e3e3', height: 64 }}>
+                        <Layout style={{ marginRight: 8 }}>
+                            <Avatar source={d.thumbnail}/>
+                        </Layout>
+                        <Layout style={{ flex: 1 }}>
+                            <Text>{d.name.substring(0,20)}</Text>
+                            <Text style={{ fontSize: 10 }}>{formatPrice(d.price)}</Text>
+                        </Layout>
                         <Text>Stok: {d.quantity} {d.unit}</Text>
                     </Layout>
                 </TouchableOpacity>) }

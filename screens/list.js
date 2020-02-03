@@ -15,11 +15,9 @@ const ListScreen = (props) => {
     const [modalShow, setModalShow] = useState(false);
     const [selectedMaterial, setSelectedMaterial] = useState({ id: 0, name: '' });
     const [quantity, setQuantity] = useState(1);
-    const [successPrompt, setSuccessPrompt] = useState(false);
-    const [errorPrompt, setErrorPrompt] = useState(false);
     const [date, setDate] = useState(new Date());
     const [notes, setNotes] = useState('');
-    const [newMaterials, setNewMaterials] = useState([]);
+    const [wo, setWo] = useState('');
 
     const search = () => {
         setLoading(true);
@@ -95,12 +93,9 @@ const ListScreen = (props) => {
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        }).then(res => res.status === 200 ? setSuccessPrompt(true):'')
-        .then(() => {
+        }).then(() => {
             setModalShow(false);
-        })
-        .catch(() => {
-            setErrorPrompt(true);
+        }).catch(() => {
             setModalShow(false);
         });
     };
@@ -110,39 +105,19 @@ const ListScreen = (props) => {
 
         return axios.post(`${newBackend}/pickup`, {
             'material_id': selectedMaterial['id'],
-            'qty': quantity
+            'qty': quantity,
+            'picked_date': moment(date).format('YYYY-MM-DD'),
+            'wo': wo
         }, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         })
-        .then(res => res.status === 200 ? setSuccessPrompt(true):'')
-        .then(() => setModalShow(false))
-        .catch(() => {
-            setErrorPrompt(true);
-            setModalShow(false);
-        });
+            .then(() => setModalShow(false))
+            .catch(() => {
+                setModalShow(false);
+            });
     };
-
-    const renderSuccess = () => (<Layout level="3" style={{
-            width: 300,
-            padding: 16,
-            borderRadius: 4,
-            backgroundColor: '#ffffff',
-            alignItems: 'center'
-        }}>
-            <Text status="success">Success</Text>
-        </Layout>)
-
-    const renderError = () => (<Layout level="3" style={{
-            width: 300,
-            padding: 16,
-            borderRadius: 4,
-            backgroundColor: '#ffffff',
-            alignItems: 'center'
-        }}>
-            <Text status="danger">Failed.</Text>
-        </Layout>)
 
     const renderModal = () => (
         <Layout level="3" style={{
@@ -172,10 +147,12 @@ const ListScreen = (props) => {
                 
                 <Button status="control" icon={renderIconUp} onPress={addQuantity}></Button>
             </Layout>
-            { quantity > selectedMaterial.quantity && <Layout style={{ marginTop: 4 }}>
+            <Layout style={{ marginTop: 4 }}>
                 <Datepicker date={date} onSelect={setDate}/>
-                <Input label="Notes" value={notes} onChangeText={setNotes}/>
-            </Layout> }
+                {quantity > selectedMaterial.quantity 
+                    ? <Input label="Notes" value={notes} onChangeText={setNotes}/>
+                    : <Input label="WO" value={wo} onChangeText={setWo}/>}
+            </Layout>
             <Layout style={{ flexDirection: 'row', marginTop: 4, justifyContent: 'space-between',  }}>
                 <Button status="success" disabled={quantity <= selectedMaterial.quantity} style={{ flex: 1, marginRight: 2 }}
                     onPress={createOrder}>Order</Button>
@@ -250,18 +227,6 @@ const ListScreen = (props) => {
             onBackdropPress={() => setModalShow(!modalShow)}
             visible={modalShow}>
             {renderModal()}
-        </Modal>
-        <Modal allowBackdrop={true}
-            backdropStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-            onBackdropPress={() => setSuccessPrompt(!successPrompt)}
-            visible={successPrompt}>
-            {renderSuccess()}
-        </Modal>
-        <Modal allowBackdrop={true}
-            backdropStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-            onBackdropPress={() => setErrorPrompt(!errorPrompt)}
-            visible={errorPrompt}>
-            {renderError()}
         </Modal>
     </React.Fragment>
     );

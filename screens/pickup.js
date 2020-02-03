@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { AsyncStorage, Modal, TouchableOpacity } from 'react-native';
-import { Layout, Text, Spinner, Button, Icon, Input } from 'react-native-ui-kitten';
+import { Layout, Text, Spinner, Button, Icon, Input, Datepicker } from 'react-native-ui-kitten';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { SafeAreaView } from 'react-navigation';
 import { ScrollView } from 'react-native-gesture-handler';
 import PickupItem from '../component/pickupItem';
 import Axios from 'axios';
 import { newBackend } from '../constant/apiUrl';
+import moment from 'moment';
 
 const PickupScreen = (props) => {
     const [pickups, setPickups] = useState([]);
@@ -14,6 +15,7 @@ const PickupScreen = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [quantity, setQuantity] = useState(10);
     const [selectedPickup, setSelectedPickup] = useState({ material: { name: 'adaw', unit: 'pieces' }, qty: 1 });
+    const [date, setDate] = useState(new Date());
 
     const fetchPickups = async () => {
         setLoading(true);
@@ -64,7 +66,8 @@ const PickupScreen = (props) => {
         if (token !== null) {
             Axios.put(`${newBackend}/pickup/${id}`, {
                 material_id: selectedPickup.material.id,
-                qty: quantity
+                qty: quantity,
+                picked_date: moment(date).format('YYYY-MM-DD')
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -122,7 +125,10 @@ const PickupScreen = (props) => {
                         setQuantity(pickups.filter(x => x.id === d.id)[0].qty);
                         setShowModal(true);
                     }}>
-                    <PickupItem name={d.material ? d.material.name.substring(0,10):'-'} quantity={d.qty} unit={d.material ? d.material.name:'piece'}/>
+                    <PickupItem name={d.material ? d.material.name.substring(0,10):'-'} 
+                        quantity={d.qty} 
+                        unit={d.material ? d.material.unit:'piece'}
+                        date={d.picked_date}/>
                 </TouchableOpacity>)}
             </ScrollView>
         </SafeAreaView>
@@ -130,6 +136,14 @@ const PickupScreen = (props) => {
             <Layout style={{ padding: 8, backgroundColor: 'white', borderWidth: 1, borderColor: '#e3e3e3',
                 borderRadius: 4, margin: 32, marginTop: 100 }}>
                 <Layout style={{ flexDirection: 'column', marginBottom: 8 }}>
+                    <Layout style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                        <Layout>
+                            <Text>WO: </Text>
+                        </Layout>
+                        <Layout>
+                            <Text>{selectedPickup.wo}</Text>
+                        </Layout>
+                    </Layout>
                     <Layout style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
                         <Layout>
                             <Text>Material Name: </Text>
@@ -146,6 +160,14 @@ const PickupScreen = (props) => {
                             <Text>{selectedPickup.qty} {selectedPickup.material.unit}</Text>
                         </Layout>
                     </Layout>
+                    <Layout style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 8 }}>
+                        <Layout>
+                            <Text>Pickup date: </Text>
+                        </Layout>
+                        <Layout>
+                            <Text>{selectedPickup.picked_date}</Text>
+                        </Layout>
+                    </Layout>
                 </Layout>
                 <Layout style={{ marginBottom: 8, flexDirection: 'row' }}>
                     <Button status="control" icon={renderIconDown}
@@ -156,6 +178,9 @@ const PickupScreen = (props) => {
                         style={{ flex: 1, marginRight: 2, marginTop: 1 }}/>
                     
                     <Button status="control" icon={renderIconUp} onPress={addQuantity}></Button>
+                </Layout>
+                <Layout style={{ marginBottom: 8 }}>
+                    <Datepicker date={date} onSelect={setDate}/>
                 </Layout>
                 <Layout style={{ flexDirection: 'row', marginBottom: 8 }}>
                     <Button style={{ flex: 1, marginRight: 8 }} size="small" status="danger"

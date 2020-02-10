@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Input, Text, Spinner, Modal, Button, Icon, Datepicker, Avatar } from 'react-native-ui-kitten';
+import { Layout, Input, Text, Spinner, Modal, Button, Icon, Avatar,
+    Select    
+} from 'react-native-ui-kitten';
 import { ImageBackground, SafeAreaView, ScrollView, AsyncStorage } from 'react-native';
 import axios from 'axios';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
@@ -7,6 +9,21 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { oldBackend, newBackend } from '../constant/apiUrl';
 import moment from 'moment';
 import empty_icon from '../assets/empty.png';
+
+const days = Array.from({ length: 31 }, (e, i) => {
+    if (i + 1 < 10) {
+        return { text: `0${i + 1}` }
+    } else {
+        return { text: `${i + 1}` }
+    }
+})
+const months = Array.from({ length: 12 }, (e, i) => {
+    if (i + 1 < 10) {
+        return { text: `0${i + 1}` }
+    } else {
+        return { text: `${i + 1}` }
+    }
+})
 
 const ListScreen = (props) => {
     const [materials, setMaterials] = useState([]);
@@ -19,6 +36,9 @@ const ListScreen = (props) => {
     const [notes, setNotes] = useState('');
     const [wo, setWo] = useState('');
     const [isTyping, setIsTyping] = useState(false)
+    const [year, setYear] = useState(moment().format('YYYY'))
+    const [day, setDay] = useState({ text: moment().format('DD') })
+    const [month, setMonth] = useState({ text: moment().format('MM') })
 
     const search = () => {
         setLoading(true);
@@ -88,7 +108,7 @@ const ListScreen = (props) => {
             'material_id': selectedMaterial.id,
             'type': 'pesanan baru',
             'qty': quantity,
-            'requestfor': moment(date).format('YYYY-MM-DD'),
+            'requestfor': `${year}-${month}-${day}`,
             'notes': notes
         }, {
             headers: {
@@ -107,7 +127,7 @@ const ListScreen = (props) => {
         return axios.post(`${newBackend}/pickup`, {
             'material_id': selectedMaterial['id'],
             'qty': quantity,
-            'picked_date': moment(date).format('YYYY-MM-DD'),
+            'picked_date': `${year}-${month}-${day}`,
             'wo': wo
         }, {
             headers: {
@@ -152,7 +172,25 @@ const ListScreen = (props) => {
                 <Button status="control" icon={renderIconUp} onPress={addQuantity}></Button>
             </Layout>
             <Layout style={{ marginTop: 4 }}>
-                <Datepicker date={date} onSelect={setDate}/>
+                <Layout style={{ flexDirection: 'row',
+                    justifyContent: 'space-between' }}>
+                    <Select label="Day" data={days}
+                        status="basic"
+                        style={{ flex: 1, marginRight: 4 }}
+                        placeholder="Day"
+                        selectedOption={day}
+                        onSelect={(e) => setDay(e)}/>
+                    <Select label="Month" data={months}
+                        status="basic"
+                        style={{ flex: 1, marginRight: 4 }}
+                        placeholder="Month"
+                        selectedOption={month}
+                        onSelect={(e) => setMonth(e)}/>
+                    <Input label="Year" keyboardType="number-pad"
+                        value={year}
+                        onChangeText={(e) => setYear(e)}
+                        placeholder="Year"/>
+                </Layout>
                 {quantity > selectedMaterial.quantity 
                     ? <Input label="Notes" value={notes} 
                         onBlur={() => setIsTyping(false)} 

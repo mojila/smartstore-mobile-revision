@@ -18,6 +18,7 @@ const ListScreen = (props) => {
     const [date, setDate] = useState(new Date());
     const [notes, setNotes] = useState('');
     const [wo, setWo] = useState('');
+    const [isTyping, setIsTyping] = useState(false)
 
     const search = () => {
         setLoading(true);
@@ -129,14 +130,17 @@ const ListScreen = (props) => {
             <ImageBackground
                 source={selectedMaterial.photo}
                 style={{
-                    height: 120
+                    height: 120,
+                    marginBottom: 8
                 }}/>
-            <Text>Material Name: {selectedMaterial.name}</Text>
-            <Text>Price: {formatPrice(selectedMaterial.price)}</Text>
-            <Text>Category: {selectedMaterial.category ? selectedMaterial.category.name : 'Uncategorized'}</Text>
-            <Text>Stock: {selectedMaterial.quantity} {selectedMaterial.unit}</Text>
-            <Text>Company Code: {selectedMaterial.company_code}</Text>
-            <Text>Location: Rak {selectedMaterial.shelf_code} Box {selectedMaterial.box_code}</Text>
+            { !isTyping && <Layout>
+                <Text>Material Name: {selectedMaterial.name}</Text>
+                <Text>Price: {formatPrice(selectedMaterial.price)}</Text>
+                <Text>Category: {selectedMaterial.category ? selectedMaterial.category.name : 'Uncategorized'}</Text>
+                <Text>Stock: {selectedMaterial.quantity} {selectedMaterial.unit}</Text>
+                <Text>Company Code: {selectedMaterial.company_code}</Text>
+                <Text>Location: Rak {selectedMaterial.shelf_code} Box {selectedMaterial.box_code}</Text>
+            </Layout> }
             <Layout style={{ marginTop: 8, flexDirection: 'row', paddingTop: 4, borderTopColor: '#e3e3e3', borderTopWidth: 1 }}>
                 <Button status="control" icon={renderIconDown}
                     style={{ marginRight: 2 }} onPress={reduceQuantity}></Button>
@@ -150,8 +154,12 @@ const ListScreen = (props) => {
             <Layout style={{ marginTop: 4 }}>
                 <Datepicker date={date} onSelect={setDate}/>
                 {quantity > selectedMaterial.quantity 
-                    ? <Input label="Notes" value={notes} onChangeText={setNotes}/>
-                    : <Input label="WO" value={wo} onChangeText={setWo}/>}
+                    ? <Input label="Notes" value={notes} 
+                        onBlur={() => setIsTyping(false)} 
+                        onFocus={() => setIsTyping(true)} onChangeText={setNotes}/>
+                    : <Input label="WO" value={wo} onChangeText={setWo}
+                        onBlur={() => setIsTyping(false)} 
+                        onFocus={() => setIsTyping(true)}/>}
             </Layout>
             <Layout style={{ flexDirection: 'row', marginTop: 4, justifyContent: 'space-between',  }}>
                 <Button status="success" disabled={quantity <= selectedMaterial.quantity} style={{ flex: 1, marginRight: 2 }}

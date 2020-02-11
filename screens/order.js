@@ -118,6 +118,19 @@ const OrderScreen = (props) => {
         return;
     };
 
+    const order = async (d) => {
+        let order_date = orders.filter(x => x.id === d.id)[0].requestfor.split('-')
+
+        setYear(order_date[0] === '0000' ? year : order_date[0])
+        setMonth(order_date[1] === '00' ? month : { text: order_date[1] })
+        setDay(order_date[2] === '00' ? day : { text: order_date[2] })
+
+        setSelectedOrder(orders.filter(x => x.id === d.id)[0]);
+        setQuantity(orders.filter(x => x.id === d.id)[0].qty);
+        setNotes(orders.filter(x => x.id === d.id)[0].notes);
+        setShowModal(true);
+    }
+
     const renderModal = () => (<Layout style={{ padding: 8, backgroundColor: 'white', borderWidth: 1, borderColor: '#e3e3e3',
         borderRadius: 4, margin: 32, marginTop: 100 }}>
         <Layout style={{ flexDirection: 'column', marginBottom: 8 }}>
@@ -210,18 +223,7 @@ const OrderScreen = (props) => {
                         <Text>There is no order item.</Text>
                     </Layout>}
                     {!loading && orders.length > 0 && orders.map((d, i) => <TouchableOpacity key={i}
-                        onPress={() => {
-                            let order_date = orders.filter(x => x.id === d.id)[0].requestfor.split('-')
-
-                            setYear(order_date[0] === '0000' ? year : order_date[0])
-                            setMonth(order_date[1] === '00' ? month : { text: order_date[1] })
-                            setDay(order_date[2] === '00' ? day : { text: order_date[2] })
-
-                            setSelectedOrder(orders.filter(x => x.id === d.id)[0]);
-                            setQuantity(orders.filter(x => x.id === d.id)[0].qty);
-                            setNotes(orders.filter(x => x.id === d.id)[0].notes);
-                            setShowModal(true);
-                        }}>
+                        onPress={() => order(d)}>
                         <OrderItem name={d.material ? d.material.name.substring(0,10):'-'} date={d.requestfor} quantity={d.qty} unit={d.material ? d.material.unit:'piece'}/>
                     </TouchableOpacity>)}
                 </ScrollView>

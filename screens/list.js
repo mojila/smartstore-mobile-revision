@@ -108,7 +108,7 @@ const ListScreen = (props) => {
             'material_id': selectedMaterial.id,
             'type': 'pesanan baru',
             'qty': quantity,
-            'requestfor': `${year}-${month}-${day}`,
+            'requestfor': `${year}-${month.text}-${day.text}`,
             'notes': notes
         }, {
             headers: {
@@ -116,7 +116,8 @@ const ListScreen = (props) => {
             }
         }).then(() => {
             setModalShow(false);
-        }).catch(() => {
+        }).catch((err) => {
+            console.log(err)
             setModalShow(false);
         });
     };
@@ -124,10 +125,17 @@ const ListScreen = (props) => {
     const createPickup = async () => {
         let token = await AsyncStorage.getItem('@auth_token');
 
+        console.log({
+            'material_id': selectedMaterial['id'],
+            'qty': quantity,
+            'picked_date': `${year}-${month.text}-${day.text}`,
+            'wo': wo
+        })
+
         return axios.post(`${newBackend}/pickup`, {
             'material_id': selectedMaterial['id'],
             'qty': quantity,
-            'picked_date': `${year}-${month}-${day}`,
+            'picked_date': `${year}-${month.text}-${day.text}`,
             'wo': wo
         }, {
             headers: {
@@ -135,7 +143,8 @@ const ListScreen = (props) => {
             }
         })
             .then(() => setModalShow(false))
-            .catch(() => {
+            .catch((err) => {
+                console.log(err)
                 setModalShow(false);
             });
     };

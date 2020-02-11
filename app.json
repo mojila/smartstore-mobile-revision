@@ -9,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "2.0.2",
+    "version": "2.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -29,7 +29,7 @@
     },
     "android":{
       "package": "com.mojila.smartstore",
-      "versionCode": 4
+      "versionCode": 5
     },
     "description": "Aplikasi ini digunakan untuk pencarian, pemesanan, dan rencana pengambilan material pada gudang Smartstore"
   }

@@ -30,7 +30,6 @@ const PickupScreen = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [quantity, setQuantity] = useState(10);
     const [selectedPickup, setSelectedPickup] = useState({ material: { name: 'adaw', unit: 'pieces' }, qty: 1 });
-    const [date, setDate] = useState(new Date());
     const [year, setYear] = useState(moment().format('YYYY'))
     const [day, setDay] = useState({ text: moment().format('DD') })
     const [month, setMonth] = useState({ text: moment().format('MM') })
@@ -85,7 +84,7 @@ const PickupScreen = (props) => {
             Axios.put(`${newBackend}/pickup/${id}`, {
                 material_id: selectedPickup.material.id,
                 qty: quantity,
-                picked_date: `${year}-${month}-${day}`
+                picked_date: `${year}-${month.text}-${day.text}`
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`

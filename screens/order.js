@@ -30,8 +30,6 @@ const OrderScreen = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [quantity, setQuantity] = useState(10);
     const [notes, setNotes] = useState('');
-    const [requestfor, setRequestfor] = useState(new Date());
-    const [type, setType] = useState('');
     const [selectedOrder, setSelectedOrder] = useState({ 
         material: { id: 1, name: 'adaw', unit: 'pieces' }, 
         qty: 1, notes: '', requestfor: '', type: '' 
@@ -92,7 +90,7 @@ const OrderScreen = (props) => {
                 qty: quantity,
                 type: 'pesanan baru',
                 notes: notes,
-                requestfor: `${year}-${month}-${day}`
+                requestfor: `${year}-${month.text}-${day.text}`
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`

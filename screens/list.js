@@ -32,7 +32,6 @@ const ListScreen = (props) => {
     const [modalShow, setModalShow] = useState(false);
     const [selectedMaterial, setSelectedMaterial] = useState({ id: 0, name: '' });
     const [quantity, setQuantity] = useState(1);
-    const [date, setDate] = useState(new Date());
     const [notes, setNotes] = useState('');
     const [wo, setWo] = useState('');
     const [isTyping, setIsTyping] = useState(false)
@@ -116,8 +115,18 @@ const ListScreen = (props) => {
             }
         }).then(() => {
             setModalShow(false);
+            setQuantity(1)
+            setNotes('')
+            setYear(moment().format('YYYY'))
+            setMonth({ text: moment().format('MM') })
+            setDay({ text: moment().format('DD') })
         }).catch((err) => {
             console.log(err)
+            setQuantity(1)
+            setNotes('')
+            setYear(moment().format('YYYY'))
+            setMonth({ text: moment().format('MM') })
+            setDay({ text: moment().format('DD') })
             setModalShow(false);
         });
     };
@@ -142,9 +151,21 @@ const ListScreen = (props) => {
                 Authorization: `Bearer ${token}`
             }
         })
-            .then(() => setModalShow(false))
+            .then(() => {
+                setModalShow(false)
+                setQuantity(1)
+                setWo('')
+                setYear(moment().format('YYYY'))
+                setMonth({ text: moment().format('MM') })
+                setDay({ text: moment().format('DD') })
+            })
             .catch((err) => {
                 console.log(err)
+                setQuantity(1)
+                setWo('')
+                setYear(moment().format('YYYY'))
+                setMonth({ text: moment().format('MM') })
+                setDay({ text: moment().format('DD') })
                 setModalShow(false);
             });
     };

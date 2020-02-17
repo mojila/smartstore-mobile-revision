@@ -163,11 +163,11 @@ const ListScreen = (props) => {
                     marginBottom: 8
                 }}/>
             { !isTyping && <Layout>
+                <Text>Code: {selectedMaterial.code}</Text>
                 <Text>Material Name: {selectedMaterial.name}</Text>
                 <Text>Price: {formatPrice(selectedMaterial.price)}</Text>
                 <Text>Category: {selectedMaterial.category ? selectedMaterial.category.name : 'Uncategorized'}</Text>
                 <Text>Stock: {selectedMaterial.quantity} {selectedMaterial.unit}</Text>
-                <Text>Company Code: {selectedMaterial.company_code}</Text>
                 <Text>Location: Rak {selectedMaterial.shelf_code} Box {selectedMaterial.box_code}</Text>
             </Layout> }
             <Layout style={{ marginTop: 8, flexDirection: 'row', paddingTop: 4, borderTopColor: '#e3e3e3', borderTopWidth: 1 }}>
